@@ -1,13 +1,13 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import Comment from './Comment';
-import KeepAliveContext from '../contexts/KeepAliveContext';
-import createEventEmitter from '../utils/createEventEmitter';
-import createUniqueIdentification from '../utils/createUniqueIdentification';
-import createStoreElement from '../utils/createStoreElement';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import Comment from "./Comment";
+import KeepAliveContext from "../contexts/KeepAliveContext";
+import createEventEmitter from "../utils/createEventEmitter";
+import createUniqueIdentification from "../utils/createUniqueIdentification";
+import createStoreElement from "../utils/createStoreElement";
 
-export const keepAliveProviderTypeName = '$$KeepAliveProvider';
-export const START_MOUNTING_DOM = 'startMountingDOM';
+export const keepAliveProviderTypeName = "$$KeepAliveProvider";
+export const START_MOUNTING_DOM = "startMountingDOM";
 
 export enum LIFECYCLE {
   MOUNTED,
@@ -47,7 +47,9 @@ export interface IKeepAliveProviderProps {
   max?: number;
 }
 
-export default class KeepAliveProvider extends React.PureComponent<IKeepAliveProviderProps> implements IKeepAliveProviderImpl {
+export default class KeepAliveProvider
+  extends React.PureComponent<IKeepAliveProviderProps>
+  implements IKeepAliveProviderImpl {
   public static displayName = keepAliveProviderTypeName;
 
   public static defaultProps = {
@@ -88,11 +90,11 @@ export default class KeepAliveProvider extends React.PureComponent<IKeepAlivePro
 
   public isExisted = () => {
     return this.existed;
-  }
+  };
 
   public setCache = (identification: string, value: ICacheItem) => {
-    const {cache, keys} = this;
-    const {max} = this.props;
+    const { cache, keys } = this;
+    const { max } = this.props;
     const currentCache = cache[identification];
     if (!currentCache) {
       keys.push(identification);
@@ -115,36 +117,37 @@ export default class KeepAliveProvider extends React.PureComponent<IKeepAlivePro
       }
       const spliceKeys = keys.splice(0, difference);
       this.forceUpdate(() => {
-        spliceKeys.forEach(key => {
+        spliceKeys.forEach((key) => {
           delete cache[key as string];
         });
       });
     });
-  }
+  };
 
   /**
    * delete component
    * @param identification
    */
-  public deleteComponent=(identification: string)=>{
+  public deleteComponent = (identification: string) => {
     this.forceUpdate(() => {
+      this.keys.splice(this.keys.indexOf(identification), 1);
       delete this.cache[identification];
     });
-  }
+  };
 
   public unactivate = (identification: string) => {
-    const {cache} = this;
+    const { cache } = this;
     this.cache[identification] = {
       ...cache[identification],
       activated: false,
       lifecycle: LIFECYCLE.UNMOUNTED,
     };
     this.forceUpdate();
-  }
+  };
 
   private startMountingDOM = (identification: string) => {
     this.eventEmitter.emit([identification, START_MOUNTING_DOM]);
-  }
+  };
 
   public render() {
     const {
@@ -158,11 +161,7 @@ export default class KeepAliveProvider extends React.PureComponent<IKeepAlivePro
       storeElement,
       eventEmitter,
     } = this;
-    const {
-      children: innerChildren,
-      include,
-      exclude,
-    } = this.props;
+    const { children: innerChildren, include, exclude } = this.props;
     if (!storeElement) {
       return null;
     }
@@ -185,13 +184,9 @@ export default class KeepAliveProvider extends React.PureComponent<IKeepAlivePro
         <React.Fragment>
           {innerChildren}
           {ReactDOM.createPortal(
-            keys.map(identification => {
+            keys.map((identification) => {
               const currentCache = cache[identification];
-              const {
-                keepAlive,
-                children,
-                lifecycle,
-              } = currentCache;
+              const { keepAlive, children, lifecycle } = currentCache;
               let cacheChildren = children;
               if (lifecycle === LIFECYCLE.MOUNTED && !keepAlive) {
                 // If the cache was last enabled, then the components of this keepAlive package are used,
@@ -205,19 +200,17 @@ export default class KeepAliveProvider extends React.PureComponent<IKeepAlivePro
 
               // current true, previous false, keepAlive true, cache
               // current true, previous false, keepAlive false, not cache
-              return (
-                cacheChildren
-                  ? (
-                    <React.Fragment key={identification}>
-                      <Comment>{identification}</Comment>
-                      {cacheChildren}
-                      <Comment
-                        onLoaded={() => this.startMountingDOM(identification)}
-                      >{identification}</Comment>
-                    </React.Fragment>
-                  )
-                  : null
-              );
+              return cacheChildren ? (
+                <React.Fragment key={identification}>
+                  <Comment>{identification}</Comment>
+                  {cacheChildren}
+                  <Comment
+                    onLoaded={() => this.startMountingDOM(identification)}
+                  >
+                    {identification}
+                  </Comment>
+                </React.Fragment>
+              ) : null;
             }),
             storeElement
           )}
