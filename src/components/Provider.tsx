@@ -122,6 +122,16 @@ export default class KeepAliveProvider extends React.PureComponent<IKeepAlivePro
     });
   }
 
+  /**
+   * delete component
+   * @param identification
+   */
+  public deleteComponent=(identification: string)=>{
+    this.forceUpdate(() => {
+      delete this.cache[identification];
+    });
+  }
+
   public unactivate = (identification: string) => {
     const {cache} = this;
     this.cache[identification] = {
