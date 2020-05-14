@@ -129,10 +129,13 @@ export default class KeepAliveProvider
    * @param identification
    */
   public deleteComponent = (identification: string) => {
-    this.forceUpdate(() => {
-      this.keys.splice(this.keys.indexOf(identification), 1);
+    let _index= this.keys.indexOf(identification);
+    if(_index>=0){
+      this.keys.splice(_index, 1);
+    }
+    this.forceUpdate(()=>{
       delete this.cache[identification];
-    });
+    })
   };
 
   public unactivate = (identification: string) => {
