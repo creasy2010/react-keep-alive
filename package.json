@@ -1,6 +1,6 @@
 {
-  "name": "react-keep-alive",
-  "version": "2.5.2",
+  "name": "@paas/react-keep-alive",
+  "version": "2.5.2-alpha.1",
   "description": "Package will allow components to maintain their status, to avoid repeated re-rendering.",
   "author": "Shen Chang",
   "homepage": "https://github.com/StructureBuilder/react-keep-alive",
